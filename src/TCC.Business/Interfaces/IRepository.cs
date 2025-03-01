@@ -1,0 +1,16 @@
+﻿using System.Linq.Expressions;
+using TCC.Business.Models;
+
+namespace TCC.Business.Interfaces
+{
+    public interface IRepository<TEntity> : IDisposable where TEntity : Entity
+    {
+        TEntity GetById(Guid id);
+        Task<List<TEntity>> GetAll();
+        Task Add(TEntity entity);
+        Task Update(TEntity entity);
+        Task Remove(Guid id);
+        Task<int> SaveChanges();
+        Task<IEnumerable<TEntity>> Get(Expression<Func<TEntity, bool>> predicate);
+    }
+}
