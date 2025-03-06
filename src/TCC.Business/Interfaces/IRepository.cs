@@ -5,12 +5,12 @@ namespace TCC.Business.Interfaces
 {
     public interface IRepository<TEntity> : IDisposable where TEntity : Entity
     {
-        TEntity GetById(Guid id);
+        Task<TEntity> GetById(Guid id);
         Task<List<TEntity>> GetAll();
         Task Add(TEntity entity);
         Task Update(TEntity entity);
         Task Remove(Guid id);
         Task<int> SaveChanges();
-        Task<IEnumerable<TEntity>> Get(Expression<Func<TEntity, bool>> predicate);
+        Task<IEnumerable<TEntity>> Where(Expression<Func<TEntity, bool>> predicate);
     }
 }

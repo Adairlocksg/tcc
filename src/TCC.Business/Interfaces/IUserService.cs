@@ -6,6 +6,5 @@ namespace TCC.Business.Interfaces
     {
         Task Add(User user);
         Task Update(User user);
-        Task Remove(Guid id);
     }
 }
