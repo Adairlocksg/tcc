@@ -12,8 +12,6 @@ namespace TCC.Data.Mappings
 
             builder.HasKey(x => x.Id);
 
-            builder.HasIndex(ug => new { ug.UserId, ug.GroupId }).IsUnique(); // Garante que um user não esteja duplicado no mesmo grupo
-
             builder.Property(x => x.Admin)
                 .IsRequired();
 
