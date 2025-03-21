@@ -10,7 +10,6 @@ namespace TCC.Business.Interfaces
         Task Add(TEntity entity);
         Task Update(TEntity entity);
         Task Remove(Guid id);
-        Task<int> SaveChanges();
         Task<IEnumerable<TEntity>> Where(Expression<Func<TEntity, bool>> predicate);
     }
 }

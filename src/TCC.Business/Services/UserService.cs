@@ -13,17 +13,13 @@ namespace TCC.Business.Services
             if (!ExecuteValidation(new UserValidation(), user))
                 return;
 
-            var userWithSameEmail = await _userRepository.Where(u => u.Email == user.Email);
-
-            if (userWithSameEmail.Any())
+            if (await _userRepository.GetByEmail(user.Email) is not null)
             {
                 Notify("Já existe um usuário com este e-mail informado.");
                 return;
             }
 
-            var userWithSameUserName = await _userRepository.Where(u => u.UserName == user.UserName);
-
-            if (userWithSameUserName.Any())
+            if (await _userRepository.GetByEmail(user.Email) is not null)
             {
                 Notify("Já existe um usuário com este nome de usuário informado.");
                 return;
@@ -43,17 +39,17 @@ namespace TCC.Business.Services
             if (!ExecuteValidation(new UserValidation(), user))
                 return;
 
-            var userWithSameEmail = await _userRepository.Where(u => u.Email == user.Email && u.Id != user.Id);
+            var userWithSameEmail = await _userRepository.GetByEmail(user.Email);
 
-            if (userWithSameEmail.Any())
+            if (userWithSameEmail.Id != user.Id)
             {
                 Notify("Já existe um usuário com este e-mail informado.");
                 return;
             }
 
-            var userWithSameUserName = await _userRepository.Where(u => u.UserName == user.UserName && u.Id != user.Id);
+            var userWithSameUserName = await _userRepository.GetByUsername(user.UserName);
 
-            if (userWithSameUserName.Any())
+            if (userWithSameUserName.Id != user.Id)
             {
                 Notify("Já existe um usuário com este nome de usuário informado.");
                 return;
