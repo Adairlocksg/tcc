@@ -20,10 +20,10 @@ namespace TCC.Api.Controllers
             return await Execute(() => userAppService.Update(id, userVwm));
         }
 
-        [HttpGet("{id:guid}")]
-        public async Task<ActionResult<UserViewModel>> GetById(Guid id)
-        {
-            return await Execute(() => userAppService.GetById(id));
-        }
+        //[HttpGet("{id:guid}")]
+        //public async Task<ActionResult<UserViewModel>> GetById(Guid id)
+        //{
+        ////return await Execute(() => userAppService.GetById(id));
+        //}
     }
 }
