@@ -10,5 +10,14 @@
 
         //EF Relation
         public IEnumerable<UserGroup> UserGroups { get; set; }
+
+        public void Update(string firstName, string lastName, string email, string userName, string password)
+        {
+            FirstName = firstName;
+            LastName = lastName; 
+            Email = email;
+            UserName = userName;
+            Password = password;
+        }
     }
 }

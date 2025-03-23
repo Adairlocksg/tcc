@@ -30,12 +30,6 @@ namespace TCC.Business.Services
 
         public async Task Update(User user)
         {
-            if (await _userRepository.GetById(user.Id) is null)
-            {
-                Notify($"Usuário de id {user.Id} não encontrado");
-                return;
-            }
-
             if (!ExecuteValidation(new UserValidation(), user))
                 return;
 

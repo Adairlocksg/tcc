@@ -20,5 +20,10 @@ namespace TCC.Business.Notifications
         {
             return _notifications.Count > 0;
         }
+
+        public string GetNotificationMessage()
+        {
+            return string.Join("</br>", _notifications.Select(n => n.Message));
+        }
     }
 }

@@ -5,7 +5,8 @@ namespace TCC.Business.Interfaces
     public interface INotifier
     {
         bool HasNotification();
-        List<Notification> GetNotifications();
         void Handle(Notification notification);
+        string GetNotificationMessage();
+        List<Notification> GetNotifications();
     }
 }
