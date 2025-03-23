@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TCC.Business", "src\TCC.Bus
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TCC.Api", "src\TCC.Api\TCC.Api.csproj", "{61BA3055-D0EE-4692-BD77-BC80301F3417}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TCC.Application", "src\TCC.Application\TCC.Application.csproj", "{647EBE73-9BA9-44D8-A681-A6017D99B046}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{61BA3055-D0EE-4692-BD77-BC80301F3417}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61BA3055-D0EE-4692-BD77-BC80301F3417}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61BA3055-D0EE-4692-BD77-BC80301F3417}.Release|Any CPU.Build.0 = Release|Any CPU
+		{647EBE73-9BA9-44D8-A681-A6017D99B046}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{647EBE73-9BA9-44D8-A681-A6017D99B046}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{647EBE73-9BA9-44D8-A681-A6017D99B046}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{647EBE73-9BA9-44D8-A681-A6017D99B046}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

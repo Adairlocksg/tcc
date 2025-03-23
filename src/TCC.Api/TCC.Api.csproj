@@ -15,12 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TCC.Application\TCC.Application.csproj" />
     <ProjectReference Include="..\TCC.Business\TCC.Business.csproj" />
     <ProjectReference Include="..\TCC.Data\TCC.Data.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\" />
   </ItemGroup>
 
 </Project>
