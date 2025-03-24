@@ -1,10 +1,6 @@
 ﻿using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TCC.Application.ViewModels;
+using TCC.Application.Dtos;
+using TCC.Application.Views;
 using TCC.Business.Models;
 
 namespace TCC.Application.Configurations
@@ -13,7 +9,8 @@ namespace TCC.Application.Configurations
     {
         public AutoMapperConfig()
         {
-            CreateMap<User, UserViewModel>().ReverseMap();
+            CreateMap<User, UserView>().ReverseMap();
+            CreateMap<UserDto, User>().ReverseMap();
         }
     }
 }

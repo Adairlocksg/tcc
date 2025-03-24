@@ -35,7 +35,7 @@ namespace TCC.Business.Services
 
             var userWithSameEmail = await _userRepository.GetByEmail(user.Email);
 
-            if (userWithSameEmail.Id != user.Id)
+            if (userWithSameEmail is not null && userWithSameEmail?.Id != user.Id)
             {
                 Notify("Já existe um usuário com este e-mail informado.");
                 return;
@@ -43,7 +43,7 @@ namespace TCC.Business.Services
 
             var userWithSameUserName = await _userRepository.GetByUsername(user.UserName);
 
-            if (userWithSameUserName.Id != user.Id)
+            if (userWithSameUserName is not null && userWithSameUserName?.Id != user.Id)
             {
                 Notify("Já existe um usuário com este nome de usuário informado.");
                 return;

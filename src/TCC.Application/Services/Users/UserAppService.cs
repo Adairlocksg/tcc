@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using TCC.Application.ViewModels;
+using TCC.Application.Dtos;
+using TCC.Application.Views;
 using TCC.Business.Base;
 using TCC.Business.Interfaces;
 using TCC.Business.Models;
@@ -9,51 +10,56 @@ namespace TCC.Application.Services.Users
     public class UserAppService(IUserRepository userRepository,
                                 IUserService userService,
                                 IMapper mapper,
-                                INotifier notifier) : IUserAppService
+                                INotifier notifier,
+                                IUnityOfWork unityOfWork) : IUserAppService
     {
-        public async Task<Result<UserViewModel>> Add(UserViewModel userVwm)
+        public async Task<Result<UserView>> Add(UserDto dto)
         {
-            var user = mapper.Map<User>(userVwm);
+            var user = mapper.Map<User>(dto);
 
             await userService.Add(user);
 
             if (notifier.HasNotification())
-                return Result.Failure<UserViewModel>(new Error("400", notifier.GetNotificationMessage()));
+                return Result.Failure<UserView>(new Error("400", notifier.GetNotificationMessage()));
 
-            return Result.Success(mapper.Map<UserViewModel>(user));
+            await unityOfWork.Commit();
+
+            return Result.Success(mapper.Map<UserView>(user));
         }
 
-        public async Task<Result<UserViewModel>> GetById(Guid id)
+        public async Task<Result<UserView>> GetById(Guid id)
         {
             var user = await userRepository.GetById(id);
 
             if (user is null)
-                return Result.Failure<UserViewModel>(new Error("404", $"Usuário de código {id} não encontrado"));
+                return Result.Failure<UserView>(new Error("404", $"Usuário de código {id} não encontrado"));
 
-            return Result.Success(mapper.Map<UserViewModel>(user));
+            return Result.Success(mapper.Map<UserView>(user));
         }
 
-        public async Task<Result<UserViewModel>> Update(Guid id, UserViewModel userVwm)
+        public async Task<Result<UserView>> Update(Guid id, UserDto dto)
         {
             var user = await userRepository.GetById(id);
 
             if (user is null)
-                return Result.Failure<UserViewModel>(new Error("404", $"Usuário de código {id} não encontrado"));
+                return Result.Failure<UserView>(new Error("404", $"Usuário de código {id} não encontrado"));
 
             user.Update(
-                userVwm.FirstName,
-                userVwm.LastName,
-                userVwm.Email,
-                userVwm.UserName,
-                userVwm.Password
+                dto.FirstName,
+                dto.LastName,
+                dto.Email,
+                dto.UserName,
+                dto.Password
             );
 
             await userService.Update(user);
 
             if (notifier.HasNotification())
-                return Result.Failure<UserViewModel>(new Error("400", notifier.GetNotificationMessage()));
+                return Result.Failure<UserView>(new Error("400", notifier.GetNotificationMessage()));
 
-            return Result.Success(mapper.Map<UserViewModel>(user));
+            await unityOfWork.Commit();
+
+            return Result.Success(mapper.Map<UserView>(user));
         }
     }
 }

@@ -1,29 +1,28 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TCC.Application.Dtos;
 using TCC.Application.Services.Users;
-using TCC.Application.ViewModels;
-using TCC.Business.Interfaces;
 
 namespace TCC.Api.Controllers
 {
     [Route("api/[controller]")]
-    public class UsersController(IUserAppService userAppService, INotifier notifier) : MainController(notifier)
+    public class UsersController(IUserAppService userAppService) : MainController
     {
         [HttpPost]
-        public async Task<IActionResult> Add(UserViewModel userVwm)
+        public async Task<IActionResult> Add([FromBody] UserDto dto)
         {
-            return await Execute(() => userAppService.Add(userVwm));
+            return await Execute(() => userAppService.Add(dto));
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UserViewModel userVwm)
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UserDto dto)
         {
-            return await Execute(() => userAppService.Update(id, userVwm));
+            return await Execute(() => userAppService.Update(id, dto));
         }
 
-        //[HttpGet("{id:guid}")]
-        //public async Task<ActionResult<UserViewModel>> GetById(Guid id)
-        //{
-        ////return await Execute(() => userAppService.GetById(id));
-        //}
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            return await Execute(() => userAppService.GetById(id));
+        }
     }
 }

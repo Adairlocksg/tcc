@@ -21,14 +21,14 @@ namespace TCC.Data.Context
             {
                 if (entry.State == EntityState.Added)
                 {
-                    entry.Entity.CreatedAt = DateTime.Now;
-                    entry.Entity.UpdatedAt = DateTime.Now;
+                    entry.Entity.CreatedAt = DateTime.UtcNow;
+                    entry.Entity.UpdatedAt = DateTime.UtcNow;
                 }
 
                 if (entry.State == EntityState.Modified)
                 {
                     entry.Property(x => x.CreatedAt).IsModified = false;
-                    entry.Entity.UpdatedAt = DateTime.Now;
+                    entry.Entity.UpdatedAt = DateTime.UtcNow;
                 }
             }
 

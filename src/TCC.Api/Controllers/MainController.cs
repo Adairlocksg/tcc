@@ -6,7 +6,7 @@ using TCC.Business.Base;
 
 namespace TCC.Api.Controllers
 {
-    [ApiController]
+    //[ApiController]
     public abstract class MainController : ControllerBase
     {
         protected async Task<IActionResult> Execute<T>(Func<Task<Result<T>>> action)
@@ -17,20 +17,43 @@ namespace TCC.Api.Controllers
             var result = await action();
 
             return result.IsSuccess
-                ? Ok(new Response(HttpStatusCode.OK, true, [string.Empty], result.Value))
-                : BadRequest(new Response(HttpStatusCode.BadRequest, false, [result.Error.Message]));
+                ? Ok(new Response(HttpStatusCode.OK, true, string.Empty, result.Value))
+                : BadRequest(new Response(HttpStatusCode.BadRequest, false, result.Error.Message));
+
+            //try
+            //{
+            //    if (!ModelState.IsValid)
+            //        return BadRequest(new Response(HttpStatusCode.BadRequest, false, GetErrorMessagesFromModelState(ModelState)));
+
+            //    var result = await action();
+
+            //    return result.IsSuccess
+            //        ? Ok(new Response(HttpStatusCode.OK, true, string.Empty, result.Value))
+            //        : BadRequest(new Response(HttpStatusCode.BadRequest, false, result.Error.Message));
+            //}
+            //catch (Exception ex)
+            //{
+            //    return BadRequest(new Response(HttpStatusCode.BadRequest, false, ex.Message));
+            //}
         }
 
         protected async Task<IActionResult > Execute(Func<Task<Result>> action)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new Response(HttpStatusCode.BadRequest, false, GetErrorMessagesFromModelState(ModelState)));
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(new Response(HttpStatusCode.BadRequest, false, GetErrorMessagesFromModelState(ModelState)));
 
-            var result = await action();
+                var result = await action();
 
-            return result.IsSuccess
-                ? Ok(new Response(HttpStatusCode.OK, true, [string.Empty]))
-                : BadRequest(new Response(HttpStatusCode.BadRequest, false, [result.Error.Message]));
+                return result.IsSuccess
+                    ? Ok(new Response(HttpStatusCode.OK, true, string.Empty))
+                    : BadRequest(new Response(HttpStatusCode.BadRequest, false, result.Error.Message));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response(HttpStatusCode.BadRequest, false, ex.Message));
+            }
         }
 
         private static List<string> GetErrorMessagesFromModelState(ModelStateDictionary modelState)

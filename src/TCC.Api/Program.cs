@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TCC.Api.Extensions;
+using TCC.Application.DependencyInjection;
 using TCC.Business.Interfaces;
 using TCC.Data.Context;
 using TCC.Data.Repository;
@@ -19,7 +20,7 @@ builder.Services.AddDbContext<MyDbContext>(options =>
     options.UseNpgsql(cs);
 });
 
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddAutoMapper(typeof(ApplicationDI));
 
 builder.Services.ResolveDependencies();
 

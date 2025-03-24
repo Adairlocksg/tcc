@@ -8,11 +8,13 @@ namespace TCC.Business.Models.Validations
         {
             RuleFor(u => u.FirstName)
                 .NotEmpty().WithMessage("O campo {PropertyName} deve ser preenchdo")
-                .Length(2, 100).WithMessage("O campo {PropertyName} deve ter entre {MinLength} e {MaxLength} caracteres");
+                .Length(2, 100).WithMessage("O campo {PropertyName} deve ter entre {MinLength} e {MaxLength} caracteres")
+                .WithName("Primeiro nome");
 
             RuleFor(u => u.LastName)
                 .NotEmpty().WithMessage("O campo {PropertyName} deve ser preenchdo")
-                .Length(2, 100).WithMessage("O campo {PropertyName} deve ter entre {MinLength} e {MaxLength} caracteres");
+                .Length(2, 100).WithMessage("O campo {PropertyName} deve ter entre {MinLength} e {MaxLength} caracteres")
+                .WithName("Último nome");
 
             RuleFor(u => u.Email)
                 .NotEmpty().WithMessage("O campo {PropertyName} deve ser preenchdo")
@@ -21,7 +23,8 @@ namespace TCC.Business.Models.Validations
 
             RuleFor(u => u.Password)
                 .NotEmpty().WithMessage("O campo {PropertyName} deve ser preenchdo")
-                .Length(6, 100).WithMessage("O campo {PropertyName} deve ter entre {MinLength} e {MaxLength} caracteres");
+                .Length(6, 255).WithMessage("O campo {PropertyName} deve ter entre {MinLength} e {MaxLength} caracteres")
+                .WithName("Senha");
         }
     }
 }
