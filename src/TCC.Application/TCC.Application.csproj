@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\TCC.Business\TCC.Business.csproj" />
     <ProjectReference Include="..\TCC.Data\TCC.Data.csproj" />
+    <ProjectReference Include="..\TCC.Infra\TCC.Infra.csproj" />
   </ItemGroup>
 
 </Project>

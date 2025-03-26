@@ -13,9 +13,11 @@ namespace TCC.Application.Services.Users
                                 INotifier notifier,
                                 IUnityOfWork unityOfWork) : IUserAppService
     {
-        public async Task<Result<UserView>> Add(UserDto dto)
+        public async Task<Result<UserView>> Register(UserDto dto)
         {
             var user = mapper.Map<User>(dto);
+
+            user.EncryptPassword();
 
             await userService.Add(user);
 
