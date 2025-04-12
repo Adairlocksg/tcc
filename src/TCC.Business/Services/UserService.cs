@@ -19,7 +19,7 @@ namespace TCC.Business.Services
                 return;
             }
 
-            if (await _userRepository.GetByEmail(user.Email) is not null)
+            if (await _userRepository.GetByUsername(user.UserName) is not null)
             {
                 Notify("Já existe um usuário com este nome de usuário informado.");
                 return;
