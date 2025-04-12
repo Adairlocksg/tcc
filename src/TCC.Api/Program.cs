@@ -38,11 +38,14 @@ var app = builder.Build();
 
 app.UseCors("AllowAll");
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.Urls.Add("http://0.0.0.0:80");
+
+
+//if (app.Environment.IsDevelopment())
+//{
+app.UseSwagger();
+app.UseSwaggerUI();
+//}
 
 app.UseHttpsRedirection();
 
