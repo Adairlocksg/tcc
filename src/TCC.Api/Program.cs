@@ -1,9 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TCC.Api.Extensions;
 using TCC.Application.DependencyInjection;
-using TCC.Business.Interfaces;
 using TCC.Data.Context;
-using TCC.Data.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +37,8 @@ builder.Services.ResolveDependencies();
 var app = builder.Build();
 
 app.UseCors("AllowAll");
+
+app.Urls.Add("http://0.0.0.0:8080");
 
 if (app.Environment.IsDevelopment())
 {
