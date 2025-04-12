@@ -24,12 +24,13 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
 # Configurações para o Railway
-ENV ASPNETCORE_URLS=http://+:${PORT}
 ENV DOTNET_RUNNING_IN_CONTAINER=true
 ENV DOTNET_VERSION=8.0.0
 
 # Copiar os arquivos publicados
 COPY --from=build /app/publish .
+
+EXPOSE 8080
 
 # Comando de execução
 ENTRYPOINT ["dotnet", "TCC.Api.dll"]
