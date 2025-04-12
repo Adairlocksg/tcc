@@ -1,4 +1,6 @@
-﻿namespace TCC.Business.Models
+﻿using TCC.Infra.Services;
+
+namespace TCC.Business.Models
 {
     public class User : Entity
     {
@@ -14,10 +16,15 @@
         public void Update(string firstName, string lastName, string email, string userName, string password)
         {
             FirstName = firstName;
-            LastName = lastName; 
+            LastName = lastName;
             Email = email;
             UserName = userName;
             Password = password;
+        }
+
+        public void EncryptPassword()
+        {
+            Password = HashService.Encrypt(Password);
         }
     }
 }

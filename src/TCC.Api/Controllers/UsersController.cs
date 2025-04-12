@@ -7,10 +7,10 @@ namespace TCC.Api.Controllers
     [Route("api/[controller]")]
     public class UsersController(IUserAppService userAppService) : MainController
     {
-        [HttpPost]
-        public async Task<IActionResult> Add([FromBody] UserDto dto)
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] UserDto dto)
         {
-            return await Execute(() => userAppService.Add(dto));
+            return await Execute(() => userAppService.Register(dto));
         }
 
         [HttpPut("{id:guid}")]
