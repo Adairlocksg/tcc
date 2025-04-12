@@ -2,23 +2,22 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copiar arquivos de solution e projetos
-COPY *.sln .
-COPY TCC.Api/*.csproj ./TCC.Api/
-COPY TCC.Application/*.csproj ./TCC.Application/
-COPY TCC.Business/*.csproj ./TCC.Business/
-COPY TCC.Data/*.csproj ./TCC.Data/
-COPY TCC.Infra/*.csproj ./TCC.Infra/
+# 1. Copiar solution e arquivos .csproj (etapa crítica para cache)
+COPY ./TCC.sln .
+COPY ./src/TCC.Api/*.csproj ./src/TCC.Api/
+COPY ./src/TCC.Application/*.csproj ./src/TCC.Application/
+COPY ./src/TCC.Business/*.csproj ./src/TCC.Business/
+COPY ./src/TCC.Data/*.csproj ./src/TCC.Data/
+COPY ./src/TCC.Infra/*.csproj ./src/TCC.Infra/
 
-# Restaurar dependências
-RUN dotnet restore
+# 2. Restaurar dependências (cacheável graças à etapa anterior)
+RUN dotnet restore "src/TCC.Api/TCC.Api.csproj"
 
-# Copiar todo o código fonte
-COPY . .
+# 3. Copiar todo o código fonte
+COPY ./src ./src
 
-# Construir e publicar o projeto principal (assumindo que TCC.Api é o projeto de entrada)
-WORKDIR /src/TCC.Api
-RUN dotnet publish -c Release -o /app/publish
+# 4. Publicar (já inclui o build)
+RUN dotnet publish "src/TCC.Api/TCC.Api.csproj" -c Release -o /app/publish --no-restore
 
 # Estágio de runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
@@ -32,5 +31,5 @@ ENV DOTNET_VERSION=8.0.0
 # Copiar os arquivos publicados
 COPY --from=build /app/publish .
 
-# Definir o comando de execução
+# Comando de execução
 ENTRYPOINT ["dotnet", "TCC.Api.dll"]
