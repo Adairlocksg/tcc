@@ -1,6 +1,6 @@
 [build]
 builder = "dockerfile"
-dockerFilePath = "./src/TCC.Api/Dockerfile"
+dockerfilePath = "./src/TCC.Api/Dockerfile"
 
 [deploy]
 startCommand = "dotnet TCC.Api.dll"
