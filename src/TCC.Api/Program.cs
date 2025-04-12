@@ -11,6 +11,10 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddEndpointsApiExplorer();
 
 var cs = builder.Configuration.GetConnectionString("DefaultConnection") ?? Environment.GetEnvironmentVariable("DefaultConnection");
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://*: {port}");
+
+builder.Services.AddHealthChecks();
 
 builder.Services.AddDbContext<MyDbContext>(options =>
 {
@@ -38,14 +42,14 @@ var app = builder.Build();
 
 app.UseCors("AllowAll");
 
-app.Urls.Add("http://0.0.0.0:80");
-
 
 //if (app.Environment.IsDevelopment())
 //{
 app.UseSwagger();
 app.UseSwaggerUI();
 //}
+
+app.UseHealthChecks("/health");
 
 app.UseHttpsRedirection();
 

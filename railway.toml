@@ -1,0 +1,8 @@
+[build]
+builder = "dockerfile"
+dockerFilePath = "./TCC.Api/Dockerfile"
+
+[deploy]
+startCommand = "dotnet TCC.Api.dll"
+restartPolicyType = "never"
+healthCheckPath = "/health"
