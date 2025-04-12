@@ -15,7 +15,7 @@ namespace TCC.Api.Extensions
 
         public static void AddServiceAuthenticator(this IServiceCollection service, IConfiguration configuration)
         {
-            var key = Encoding.ASCII.GetBytes(configuration["Authentication:Key"]);
+            var key = Encoding.ASCII.GetBytes(configuration["Authentication:Key"] ?? Environment.GetEnvironmentVariable("AuthenticationKey"));
             service.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

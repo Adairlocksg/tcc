@@ -1,13 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace TCC.Infra.Helpers
 {
@@ -15,7 +11,7 @@ namespace TCC.Infra.Helpers
     {
         public static string Create(IConfiguration configuration, string role, Guid userId)
         {
-            var key = Encoding.ASCII.GetBytes(configuration["Authentication:Key"]);
+            var key = Encoding.ASCII.GetBytes(configuration["Authentication:Key"] ?? Environment.GetEnvironmentVariable("AuthenticationKey"));
 
             var tokenConfig = new SecurityTokenDescriptor
             {
