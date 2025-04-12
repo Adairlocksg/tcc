@@ -4,6 +4,7 @@ using TCC.Business.Notifications;
 using TCC.Business.Services;
 using TCC.Data.Context;
 using TCC.Data.Repository;
+using TCC.Infra.Helpers;
 
 namespace TCC.Api.Extensions
 {
@@ -22,6 +23,10 @@ namespace TCC.Api.Extensions
 
             //Application
             services.AddScoped<IUserAppService, UserAppService>();
+
+
+            //Infra
+            services.AddScoped<ITokenHelper, TokenHelper>();
 
             return services;
         }

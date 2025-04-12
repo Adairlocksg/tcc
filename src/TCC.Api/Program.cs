@@ -57,4 +57,6 @@ app.UseServiceApplicationAuth();
 
 app.MapControllers();
 
+app.ConfigureExceptionHandler();
+
 app.Run();

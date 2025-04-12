@@ -7,20 +7,18 @@ using System.Text;
 
 namespace TCC.Infra.Helpers
 {
-    public class TokenHelper(IHttpContextAccessor httpContextAccessor)
+    public class TokenHelper(IHttpContextAccessor httpContextAccessor): ITokenHelper
     {
-        public static string Create(IConfiguration configuration, string role, Guid userId)
+        public static string Create(IConfiguration configuration, Guid userId)
         {
             var key = Encoding.ASCII.GetBytes(configuration["Authentication:Key"] ?? Environment.GetEnvironmentVariable("AuthenticationKey"));
 
             var tokenConfig = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(
-                new[]
-                {
-                        new Claim(ClaimTypes.Role, role),
+                [
                         new Claim("userId", userId.ToString())
-                }),
+                ]),
                 Expires = DateTime.MaxValue,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };

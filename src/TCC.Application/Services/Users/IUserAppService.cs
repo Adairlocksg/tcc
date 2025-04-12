@@ -9,5 +9,6 @@ namespace TCC.Application.Services.Users
         Task<Result<UserView>> Register(UserDto dto);
         Task<Result<UserView>> GetById(Guid id);
         Task<Result<UserView>> Update(Guid id, UserDto dto);
+        Task<Result<string>> Login(LoginDto dto);
     }
 }

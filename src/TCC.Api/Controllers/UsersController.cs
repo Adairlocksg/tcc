@@ -1,16 +1,25 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TCC.Application.Dtos;
 using TCC.Application.Services.Users;
 
 namespace TCC.Api.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     public class UsersController(IUserAppService userAppService) : MainController
     {
-        [HttpPost("register")]
+        [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] UserDto dto)
         {
             return await Execute(() => userAppService.Register(dto));
+        }
+
+        [AllowAnonymous]
+        [HttpGet("Login")]
+        public async Task<IActionResult> Login([FromQuery] LoginDto dto)
+        {
+            return await Execute(() => userAppService.Login(dto));
         }
 
         [HttpPut("{id:guid}")]
