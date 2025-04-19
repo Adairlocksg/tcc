@@ -1,4 +1,5 @@
-﻿using TCC.Application.Services.Users;
+﻿using TCC.Application.Services.Groups;
+using TCC.Application.Services.Users;
 using TCC.Business.Interfaces;
 using TCC.Business.Notifications;
 using TCC.Business.Services;
@@ -15,15 +16,19 @@ namespace TCC.Api.Extensions
             //Data
             services.AddScoped<MyDbContext>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUserGroupRepository, UserGroupRepository>();
+            services.AddScoped<IGroupRepository, GroupRepository>();
             services.AddScoped<IUnityOfWork, UnitOfWork>();
 
             //Business
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<INotifier, Notifier>();
+            services.AddScoped<IGroupService, GroupService>();
+            services.AddScoped<IUserGroupService, UserGroupService>();
 
             //Application
             services.AddScoped<IUserAppService, UserAppService>();
-
+            services.AddScoped<IGroupAppService, GroupAppService>();
 
             //Infra
             services.AddScoped<ITokenHelper, TokenHelper>();

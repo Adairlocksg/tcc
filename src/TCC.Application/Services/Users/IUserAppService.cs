@@ -4,7 +4,7 @@ using TCC.Business.Base;
 
 namespace TCC.Application.Services.Users
 {
-    public interface IUserAppService
+    public interface IUserAppService : IDisposable
     {
         Task<Result<UserView>> Register(UserDto dto);
         Task<Result<UserView>> GetById(Guid id);

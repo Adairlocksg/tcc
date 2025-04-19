@@ -2,6 +2,14 @@
 {
     public class UserGroup : Entity
     {
+        public UserGroup() { }
+        public UserGroup(Guid userId, Guid groupId, bool admin, bool favorite)
+        {
+            UserId = userId;
+            GroupId = groupId;
+            Admin = admin;
+            Favorite = favorite;
+        }
         public bool Admin { get; set; }
         public bool Favorite { get; set; }
         public Guid UserId { get; set; }

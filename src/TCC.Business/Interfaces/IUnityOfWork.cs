@@ -2,6 +2,9 @@
 {
     public interface IUnityOfWork
     {
+        Task BeginTransactionAsync();
         Task Commit();
+        Task CommitTransactionAsync();
+        Task RollbackTransactionAsync();
     }
 }

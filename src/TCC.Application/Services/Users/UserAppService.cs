@@ -19,7 +19,7 @@ namespace TCC.Application.Services.Users
     {
         public async Task<Result<UserView>> Register(UserDto dto)
         {
-            var user = mapper.Map<User>(dto);
+            var user = new User(dto.FirstName, dto.LastName, dto.Email, dto.UserName, dto.Password);
 
             user.EncryptPassword();
 
@@ -81,6 +81,11 @@ namespace TCC.Application.Services.Users
             await unityOfWork.Commit();
 
             return Result.Success(mapper.Map<UserView>(user));
+        }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
         }
     }
 }

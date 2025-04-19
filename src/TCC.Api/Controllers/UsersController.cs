@@ -9,6 +9,7 @@ namespace TCC.Api.Controllers
     [Route("api/[controller]")]
     public class UsersController(IUserAppService userAppService) : MainController
     {
+        [AllowAnonymous]
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] UserDto dto)
         {
