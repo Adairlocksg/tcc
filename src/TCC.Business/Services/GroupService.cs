@@ -4,7 +4,7 @@ using TCC.Business.Models.Validations;
 
 namespace TCC.Business.Services
 {
-    public class GroupService(INotifier notifier, IGroupRepository groupRepository) : BaseService(notifier), IGroupService
+    public class GroupService(INotifier notifier, IGroupRepository groupRepository, ICategoryRepository categoryRepository) : BaseService(notifier), IGroupService
     {
         public async Task Add(Group group)
         {
@@ -20,6 +20,20 @@ namespace TCC.Business.Services
                 return;
 
             await groupRepository.Update(group);
+        }
+
+        public async Task AddCategory(Group group, Category category)
+        {
+            if (group.Categories.Any(c => c.Description == category.Description))
+            {
+                Notify($"Já existe uma categoria com a mesma descrição no grupo {group.Description}");
+                return;
+            }
+
+            if (!ExecuteValidation(new CategoryValidation(), category))
+                return;
+
+            await categoryRepository.Add(category);
         }
 
         public void Dispose()

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TCC.Data.Context;
@@ -11,9 +12,11 @@ using TCC.Data.Context;
 namespace TCC.Data.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250419174941_AddInviteEntity")]
+    partial class AddInviteEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,36 +24,6 @@ namespace TCC.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("TCC.Business.Models.Category", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<Guid>("GroupId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GroupId");
-
-                    b.ToTable("categories", (string)null);
-                });
 
             modelBuilder.Entity("TCC.Business.Models.Group", b =>
                 {
@@ -182,16 +155,6 @@ namespace TCC.Data.Migrations
                     b.ToTable("user_groups", (string)null);
                 });
 
-            modelBuilder.Entity("TCC.Business.Models.Category", b =>
-                {
-                    b.HasOne("TCC.Business.Models.Group", "Group")
-                        .WithMany("Categories")
-                        .HasForeignKey("GroupId")
-                        .IsRequired();
-
-                    b.Navigation("Group");
-                });
-
             modelBuilder.Entity("TCC.Business.Models.Invite", b =>
                 {
                     b.HasOne("TCC.Business.Models.Group", "Group")
@@ -228,8 +191,6 @@ namespace TCC.Data.Migrations
 
             modelBuilder.Entity("TCC.Business.Models.Group", b =>
                 {
-                    b.Navigation("Categories");
-
                     b.Navigation("UserGroups");
                 });
 

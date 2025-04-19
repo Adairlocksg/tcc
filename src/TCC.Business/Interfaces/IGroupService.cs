@@ -6,5 +6,6 @@ namespace TCC.Business.Interfaces
     {
         Task Add(Group group);
         Task Update(Group group);
+        Task AddCategory(Group group, Category category);
     }
 }

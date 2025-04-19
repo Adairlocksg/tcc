@@ -4,6 +4,6 @@ namespace TCC.Business.Interfaces
 {
     public interface IUserGroupRepository : IRepository<UserGroup>
     {
-        Task<IEnumerable<UserGroup>> GetByUserAndGroup(Guid userId, Guid groupId);
+        Task<UserGroup> GetByUserAndGroup(Guid userId, Guid groupId);
     }
 }

@@ -9,7 +9,7 @@ namespace TCC.Data.Repository
     {
         private IDbContextTransaction _currentTransaction;
 
-        public async Task Commit()
+        public async Task CommitAsync()
         {
             await context.SaveChangesAsync();
         }
@@ -24,7 +24,7 @@ namespace TCC.Data.Repository
         {
             try
             {
-                await Commit();
+                await CommitAsync();
                 await _currentTransaction?.CommitAsync();
             }
             catch

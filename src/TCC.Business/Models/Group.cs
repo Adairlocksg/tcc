@@ -10,6 +10,7 @@
 
         public string Description { get; private set; }
         public bool Active { get; private set; } = true;
+        public ICollection<Category> Categories { get; private set; } = [];
 
         //EF Relation
         public IEnumerable<UserGroup> UserGroups { get; set; }

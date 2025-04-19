@@ -7,9 +7,9 @@ namespace TCC.Business.Services
     {
         public async Task Add(UserGroup userGroup)
         {
-            var userGroups = await userGroupRepository.GetByUserAndGroup(userGroup.UserId, userGroup.GroupId);
+            var existentUserGroup = await userGroupRepository.GetByUserAndGroup(userGroup.UserId, userGroup.GroupId);
 
-            if (userGroups.Any())
+            if (existentUserGroup is not null)
             {
                 Notify("Usuário já foi adicionado a esse grupo");
                 return;

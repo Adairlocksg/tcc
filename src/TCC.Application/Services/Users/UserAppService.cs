@@ -28,7 +28,7 @@ namespace TCC.Application.Services.Users
             if (notifier.HasNotification())
                 return Result.Failure<UserView>(new Error("400", notifier.GetNotificationMessage()));
 
-            await unityOfWork.Commit();
+            await unityOfWork.CommitAsync();
 
             return Result.Success(mapper.Map<UserView>(user));
         }
@@ -78,7 +78,7 @@ namespace TCC.Application.Services.Users
             if (notifier.HasNotification())
                 return Result.Failure<UserView>(new Error("400", notifier.GetNotificationMessage()));
 
-            await unityOfWork.Commit();
+            await unityOfWork.CommitAsync();
 
             return Result.Success(mapper.Map<UserView>(user));
         }

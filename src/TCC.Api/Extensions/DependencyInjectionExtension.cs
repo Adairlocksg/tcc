@@ -1,4 +1,6 @@
-﻿using TCC.Application.Services.Groups;
+﻿using TCC.Application.Services;
+using TCC.Application.Services.Groups;
+using TCC.Application.Services.Invites;
 using TCC.Application.Services.Users;
 using TCC.Business.Interfaces;
 using TCC.Business.Notifications;
@@ -18,6 +20,8 @@ namespace TCC.Api.Extensions
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserGroupRepository, UserGroupRepository>();
             services.AddScoped<IGroupRepository, GroupRepository>();
+            services.AddScoped<IInviteRepository, InivteRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IUnityOfWork, UnitOfWork>();
 
             //Business
@@ -25,10 +29,13 @@ namespace TCC.Api.Extensions
             services.AddScoped<INotifier, Notifier>();
             services.AddScoped<IGroupService, GroupService>();
             services.AddScoped<IUserGroupService, UserGroupService>();
+            services.AddScoped<IInviteService, InviteService>();
 
             //Application
             services.AddScoped<IUserAppService, UserAppService>();
             services.AddScoped<IGroupAppService, GroupAppService>();
+            services.AddScoped<IInviteAppService, InviteAppService>();
+            services.AddScoped<IGroupAdminValidator, GroupAdminValidator>();
 
             //Infra
             services.AddScoped<ITokenHelper, TokenHelper>();

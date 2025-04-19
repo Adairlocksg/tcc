@@ -18,6 +18,15 @@ namespace TCC.Data.Mappings
 
             builder.Property(x => x.Active)
                 .IsRequired();
+
+            builder
+                .HasMany(g => g.Categories)
+                .WithOne(c => c.Group)
+                .HasForeignKey(c => c.GroupId);
+
+            builder
+                .Navigation(g => g.Categories) // <- expõe ao EF como coleção navegável
+                .UsePropertyAccessMode(PropertyAccessMode.Field);
         }
     }
 }

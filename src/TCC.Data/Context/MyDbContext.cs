@@ -14,7 +14,8 @@ namespace TCC.Data.Context
         public DbSet<User> Users { get; set; }
         public DbSet<Group> Groups { get; set; }
         public DbSet<UserGroup> UserGroups { get; set; }
-
+        public DbSet<Invite> Invites { get; set; }
+        public DbSet<Category> Categories { get; set; }
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             foreach (var entry in ChangeTracker.Entries<Entity>())

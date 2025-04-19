@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using System.ComponentModel;
+using System.Threading.Tasks.Dataflow;
+using AutoMapper;
 using TCC.Application.Dtos;
 using TCC.Application.Views;
 using TCC.Business.Base;
@@ -9,10 +11,13 @@ using TCC.Infra.Helpers;
 namespace TCC.Application.Services.Groups
 {
     public class GroupAppService(IGroupService groupService,
+                                 IGroupRepository groupRepository,
+                                 IUserGroupRepository userGroupRepository,
                                  IUserGroupService userGroupService,
                                  ITokenHelper tokenHelper,
                                  INotifier notifier,
                                  IMapper mapper,
+                                 IGroupAdminValidator groupAdminValidator,
                                  IUnityOfWork unityOfWork) : IGroupAppService
     {
         public async Task<Result<GroupView>> Add(GroupDto dto)
@@ -37,13 +42,62 @@ namespace TCC.Application.Services.Groups
 
             if (notifier.HasNotification())
             {
-                await unityOfWork.RollbackTransactionAsync();   
+                await unityOfWork.RollbackTransactionAsync();
                 return Result.Failure<GroupView>(new Error("400", notifier.GetNotificationMessage()));
             }
 
             await unityOfWork.CommitTransactionAsync();
 
             return Result.Success(mapper.Map<GroupView>(group));
+        }
+
+        public async Task<Result<string>> GenerateLink(Guid id)
+        {
+            var group = await groupRepository.GetById(id);
+            if (group is null)
+                return Result.Failure<string>(new Error("404", $"Grupo de código {id} não encontrado"));
+
+            var validationGroupAdmin = await groupAdminValidator.Validate(id);
+            if (!validationGroupAdmin.IsSuccess)
+                return Result.Failure<string>(new Error(validationGroupAdmin.Error.Code, validationGroupAdmin.Error.Message));
+
+            return Result.Success($"sharethebill-invitation/{id}");
+        }
+
+        public async Task<Result<CategoryView>> AddCategory(Guid id, CategoryDto dto)
+        {
+            var group = await groupRepository.GetWithCategories(id);
+
+            if (group is null)
+                return Result.Failure<CategoryView>(new Error("404", $"Grupo de código {id} não encontrado"));
+
+            var userGroup = await userGroupRepository.GetByUserAndGroup(tokenHelper.GetUserIdFromClaim(), id);
+            if (userGroup is null)
+                return Result.Failure<CategoryView>(new Error("403", "Usuário não pertence ao grupo para poder criar uma categoria"));
+
+            var category = new Category(dto.Description, id);
+
+            await groupService.AddCategory(group, category);
+
+            if (notifier.HasNotification())
+                return Result.Failure<CategoryView>(new Error("400", notifier.GetNotificationMessage()));
+
+            await unityOfWork.CommitAsync();
+
+            return Result.Success(mapper.Map<CategoryView>(category));
+        }
+
+        public async Task<Result<IEnumerable<CategoryView>>> GetCategories(Guid id)
+        {
+            var group = await groupRepository.GetWithCategories(id);
+            if (group is null)
+                return Result.Failure<IEnumerable<CategoryView>>(new Error("404", $"Grupo de código {id} não encontrado"));
+
+            var userGroup = await userGroupRepository.GetByUserAndGroup(tokenHelper.GetUserIdFromClaim(), id);
+            if (userGroup is null)
+                return Result.Failure<IEnumerable<CategoryView>>(new Error("403", "Usuário não pertence ao grupo para poder listar categorias"));
+
+            return Result.Success(group.Categories.Select(c => mapper.Map<CategoryView>(c)));
         }
 
         public void Dispose()
