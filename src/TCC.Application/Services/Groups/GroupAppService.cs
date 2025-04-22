@@ -34,9 +34,7 @@ namespace TCC.Application.Services.Groups
                 return Result.Failure<GroupView>(new Error("400", notifier.GetNotificationMessage()));
             }
 
-            var userId = tokenHelper.GetUserIdFromClaim();
-
-            var userGroup = new UserGroup(userId, group.Id, true, false);
+            var userGroup = new UserGroup(tokenHelper.GetUserIdFromClaim(), group.Id, true, false);
 
             await userGroupService.Add(userGroup);
 
@@ -73,7 +71,7 @@ namespace TCC.Application.Services.Groups
 
             var userGroup = await userGroupRepository.GetByUserAndGroup(tokenHelper.GetUserIdFromClaim(), id);
             if (userGroup is null)
-                return Result.Failure<CategoryView>(new Error("403", "Usuário não pertence ao grupo para poder criar uma categoria"));
+                return Result.Failure<CategoryView>(new Error("403", "Usuário precisa pertencer ao grupo para poder criar uma categoria"));
 
             var category = new Category(dto.Description, id);
 
@@ -95,7 +93,7 @@ namespace TCC.Application.Services.Groups
 
             var userGroup = await userGroupRepository.GetByUserAndGroup(tokenHelper.GetUserIdFromClaim(), id);
             if (userGroup is null)
-                return Result.Failure<IEnumerable<CategoryView>>(new Error("403", "Usuário não pertence ao grupo para poder listar categorias"));
+                return Result.Failure<IEnumerable<CategoryView>>(new Error("403", "Usuário precisa pertencer ao grupo para poder listar categorias"));
 
             return Result.Success(group.Categories.Select(c => mapper.Map<CategoryView>(c)));
         }
