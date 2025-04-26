@@ -12,7 +12,8 @@ namespace TCC.Application.Services.Expenses
                                    IUserGroupRepository userGroupRepository,
                                    ITokenHelper tokenHelper,
                                    INotifier notifier,
-                                   ICategoryRepository categoryRepository) : IExpenseAppService
+                                   ICategoryRepository categoryRepository,
+                                   IUnityOfWork unityOfWork) : IExpenseAppService
     {
         public async Task<Result<IdView>> Add(ExpenseDto dto)
         {
@@ -24,7 +25,7 @@ namespace TCC.Application.Services.Expenses
             if (userGroupFromClaim is null)
                 return Result.Failure<IdView>(new Error("404", $"Usuário de código {tokenHelper.GetUserIdFromClaim()} não encontrado no grupo de código {dto.GroupId}"));
 
-            var userGroup = userGroupFromClaim;
+            UserGroup userGroup = null;
 
             if (userGroupFromClaim.UserId != dto.UserId)
             {
@@ -32,6 +33,8 @@ namespace TCC.Application.Services.Expenses
                     return Result.Failure<IdView>(new Error("403", $"Usuário {userGroupFromClaim.User.UserName} não tem permissão para adicionar despesas para outras pessoas no grupo {userGroupFromClaim.Group.Description}"));
 
                 userGroup = await userGroupRepository.GetByUserAndGroup(dto.UserId, dto.GroupId);
+                if (userGroup is null)
+                    return Result.Failure<IdView>(new Error("404", $"Usuário de código {dto.UserId} não encontrado no grupo de código {dto.GroupId}"));
             }
 
             var expense = new Expense(dto.Description,
@@ -41,87 +44,47 @@ namespace TCC.Application.Services.Expenses
                                       dto.Recurrence,
                                       dto.RecurrenceInterval,
                                       dto.IsRecurring,
-                                      userGroup.User,
-                                      category,
-                                      userGroup.Group);
+                                      userGroupFromClaim.UserId == dto.UserId ? userGroupFromClaim.UserId : userGroup.UserId,
+                                      category.Id,
+                                      userGroupFromClaim.UserId == dto.UserId ? userGroupFromClaim.GroupId: userGroup.GroupId);
 
             await expenseService.Add(expense);
 
             if (notifier.HasNotification())
                 return Result.Failure<IdView>(new Error("400", notifier.GetNotificationMessage()));
 
+            await unityOfWork.CommitAsync();
+
             return Result.Success(new IdView(expense.Id));
         }
 
-        public async Task<Result<List<ExpenseView>>> GetByGroupAndDateRange(Guid groupId, DateTime startDate, DateTime endDate)
+        public async Task<Result<List<ExpenseSummaryView>>> GetExpenseSummaryByGroup(GetExpenseSummaryByGroupDto dto)
         {
-            var group = await userGroupRepository.GetByUserAndGroup(tokenHelper.GetUserIdFromClaim(), groupId);
+            var group = await userGroupRepository.GetByUserAndGroup(tokenHelper.GetUserIdFromClaim(), dto.GroupId);
             if (group is null)
-                return Result.Failure<List<ExpenseView>>(new Error("404", $"Grupo de código {groupId} não encontrado, ou usuário logado não pertence ao grupo"));
+                return Result.Failure<List<ExpenseSummaryView>>(new Error("404", $"Grupo de código {dto.GroupId} não encontrado, ou usuário logado não pertence ao grupo"));
 
-            var expenses = await expenseRepository.GetByGroupAndDateRange(groupId, startDate, endDate);
+            var expenses = await expenseRepository.GetByGroupAndDateRange(dto.GroupId, dto.StartDate, dto.EndDate);
 
-            var result = new List<ExpenseView>();
+            var summaryList = new List<ExpenseSummaryView>();
 
             foreach (var expense in expenses)
             {
-                if (!expense.IsRecurring)
+                var occurrences = expenseService.CalculateOcurrencesByDateRange(expense, dto.StartDate, dto.EndDate);
+
+                var totalValue = occurrences * expense.Value;
+
+                summaryList.Add(new ExpenseSummaryView
                 {
-                    if (expense.BeginDate >= startDate && expense.BeginDate <= endDate)
-                    {
-                        result.Add(MapToView(expense, expense.BeginDate));
-                    }
-                }
-                else
-                {
-                    var currentDate = expense.BeginDate;
-
-                    while (currentDate <= endDate)
-                    {
-                        if (currentDate >= startDate)
-                        {
-                            result.Add(MapToView(expense, currentDate));
-                        }
-
-                        currentDate = GetNextOccurrenceDate(currentDate, expense);
-
-                        if (expense.EndDate.HasValue && currentDate > expense.EndDate.Value)
-                            break;
-                    }
-                }
+                    Id = expense.Id,
+                    Description = expense.Description,
+                    TotalValue = totalValue,
+                    RecurrenceType = expense.IsRecurring ? expense.Recurrence?.ToString() : null,
+                    IsRecurring = expense.IsRecurring
+                });
             }
 
-            return Result.Success(result);
-        }
-
-        private static ExpenseView MapToView(Expense expense, DateTime occurrenceDate)
-        {
-            return new ExpenseView
-            {
-                Description = expense.Description,
-                Value = expense.Value,
-                BeginDate = occurrenceDate,
-                EndDate = null, // Para instância virtual, pode ser nulo ou copiar o EndDate original dependendo da regra
-                IsRecurring = expense.IsRecurring,
-                Recurrence = expense.Recurrence,
-                RecurrenceInterval = expense.RecurrenceInterval,
-                Active = expense.Active,
-                UserId = expense.UserId,
-                CategoryId = expense.CategoryId,
-                GroupId = expense.GroupId
-            };
-        }
-
-        private static DateTime GetNextOccurrenceDate(DateTime current, Expense expense)
-        {
-            return expense.Recurrence switch
-            {
-                RecurrenceType.Daily => current.AddDays(1),
-                RecurrenceType.Weekly => current.AddDays(7),
-                RecurrenceType.Monthly => current.AddMonths(1),
-                RecurrenceType.Custom => current.AddDays(expense.RecurrenceInterval),
-                _ => throw new ArgumentOutOfRangeException()
-            };
+            return Result.Success(summaryList);
         }
 
         public void Dispose()

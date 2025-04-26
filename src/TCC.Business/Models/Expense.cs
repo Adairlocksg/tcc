@@ -10,9 +10,9 @@
                         RecurrenceType? recurrence,
                         int recurrenceInterval,
                         bool isRecurring,
-                        User user,
-                        Category category,
-                        Group group)
+                        Guid userId,
+                        Guid categoryId,
+                        Guid groupId)
         {
             Description = description;
             Value = value;
@@ -21,12 +21,9 @@
             Recurrence = recurrence;
             RecurrenceInterval = recurrenceInterval;
             IsRecurring = isRecurring;
-            UserId = group.Id;
-            CategoryId = category.Id;
-            GroupId = group.Id;
-            User = user;
-            Category = category;
-            Group = group;
+            UserId = userId;
+            CategoryId = categoryId;
+            GroupId = groupId;
         }
 
         public string Description { get; private set; }

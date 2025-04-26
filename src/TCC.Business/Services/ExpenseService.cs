@@ -18,5 +18,41 @@ namespace TCC.Business.Services
         {
             await expenseRepository.Remove(expense.Id);
         }
+
+        public int CalculateOcurrencesByDateRange(Expense expense, DateTime start, DateTime end)
+        {
+            if (!expense.IsRecurring)
+            {
+                return (expense.BeginDate >= start && expense.BeginDate <= end) ? 1 : 0;
+            }
+
+            var effectiveStart = expense.BeginDate > start ? expense.BeginDate : start;
+            var effectiveEnd = expense.EndDate.HasValue && expense.EndDate.Value < end ? expense.EndDate.Value : end;
+
+            int occurrences = 0;
+            switch (expense.Recurrence)
+            {
+                case RecurrenceType.Daily:
+                    occurrences = (int)(effectiveEnd - effectiveStart).TotalDays + 1;
+                    break;
+
+                case RecurrenceType.Weekly:
+                    occurrences = ((int)(effectiveEnd - effectiveStart).TotalDays / 7) + 1;
+                    break;
+
+                case RecurrenceType.Monthly:
+                    occurrences = ((effectiveEnd.Year - effectiveStart.Year) * 12 + effectiveEnd.Month - effectiveStart.Month) + 1;
+                    break;
+
+                case RecurrenceType.Custom:
+                    if (expense.RecurrenceInterval > 0)
+                    {
+                        occurrences = ((int)(effectiveEnd - effectiveStart).TotalDays / expense.RecurrenceInterval) + 1;
+                    }
+                    break;
+            }
+
+            return occurrences;
+        }
     }
 }

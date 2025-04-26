@@ -6,5 +6,6 @@ namespace TCC.Business.Interfaces
     {
         Task Add(Expense expense);
         Task Remove(Expense expense);
+        int CalculateOcurrencesByDateRange(Expense expense, DateTime startDate, DateTime endDate);
     }
 }
