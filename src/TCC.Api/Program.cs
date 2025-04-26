@@ -55,6 +55,8 @@ app.UseHttpsRedirection();
 
 app.UseServiceApplicationAuth();
 
+//app.UseMiddleware<UtcToBrasiliaMiddleware>();
+
 app.MapControllers();
 
 app.ConfigureExceptionHandler();

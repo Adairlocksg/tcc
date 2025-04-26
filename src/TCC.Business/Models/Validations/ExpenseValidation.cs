@@ -18,7 +18,6 @@ namespace TCC.Business.Models.Validations
                 .NotEmpty().WithMessage("O campo {PropertyName} deve ser preenchido");
 
             RuleFor(g => g.EndDate)
-                .NotEmpty().WithMessage("O campo {PropertyName} deve ser preenchido")
                 .GreaterThan(g => g.BeginDate).WithMessage("O campo {PropertyName} deve ser maior que a data de início");
 
             RuleFor(g => g.CategoryId)
@@ -33,12 +32,18 @@ namespace TCC.Business.Models.Validations
                 .NotEmpty().WithMessage("O campo {PropertyName} deve ser preenchido")
                 .Must(g => g != Guid.Empty).WithMessage("O campo {PropertyName} deve ser preenchido");
 
+            RuleFor(g => g.IsRecurring)
+                .NotNull().WithMessage("O campo {PropertyName} deve ser preenchido");
+
             RuleFor(g => g.Recurrence)
-                .NotEmpty().WithMessage("O campo {PropertyName} deve ser preenchido")
-                .IsInEnum().WithMessage("O campo {PropertyName} deve ser um valor válido");
+                .NotNull().WithMessage("O campo {PropertyName} deve ser preenchido")
+                .When(g => g.IsRecurring)
+                .WithMessage("O campo {PropertyName} é obrigatório para despesas recorrentes");
 
             RuleFor(g => g.RecurrenceInterval)
-                .NotEmpty().WithMessage("O campo {PropertyName} deve ser preenchido");
+                .GreaterThan(0).WithMessage("O campo {PropertyName} deve ser maior que 0")
+                .When(g => g.IsRecurring && g.Recurrence.HasValue && g.Recurrence == RecurrenceType.Custom)
+                .WithMessage("O campo {PropertyName} é obrigatório para recorrência personalizada");
 
             RuleFor(g => g.Active)
                 .NotEmpty().WithMessage("O campo {PropertyName} deve ser preenchido")

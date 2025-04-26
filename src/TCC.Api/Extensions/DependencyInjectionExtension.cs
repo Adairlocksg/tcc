@@ -23,6 +23,7 @@ namespace TCC.Api.Extensions
             services.AddScoped<IInviteRepository, InivteRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IUnityOfWork, UnitOfWork>();
+            services.AddScoped<IExpenseRepository, ExpenseRepository>();
 
             //Business
             services.AddScoped<IUserService, UserService>();
@@ -30,6 +31,7 @@ namespace TCC.Api.Extensions
             services.AddScoped<IGroupService, GroupService>();
             services.AddScoped<IUserGroupService, UserGroupService>();
             services.AddScoped<IInviteService, InviteService>();
+            services.AddScoped<IExpenseService, ExpenseService>();
 
             //Application
             services.AddScoped<IUserAppService, UserAppService>();
