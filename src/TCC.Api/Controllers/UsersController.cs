@@ -17,8 +17,8 @@ namespace TCC.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("Login")]
-        public async Task<IActionResult> Login([FromQuery] LoginDto dto)
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
             return await Execute(() => userAppService.Login(dto));
         }
