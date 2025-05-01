@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-using System.Threading.Tasks.Dataflow;
-using AutoMapper;
+﻿using AutoMapper;
 using TCC.Application.Dtos;
 using TCC.Application.Views;
 using TCC.Business.Base;
@@ -24,7 +22,7 @@ namespace TCC.Application.Services.Groups
         {
             await unityOfWork.BeginTransactionAsync();
 
-            var group = new Group(dto.Description);
+            var group = new Group(dto.Name, dto.Description);
 
             await groupService.Add(group);
 
