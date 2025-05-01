@@ -7,6 +7,17 @@ namespace TCC.Data.Repository
 {
     public class UserGroupRepository(MyDbContext db) : Repository<UserGroup>(db), IUserGroupRepository
     {
+        public async Task<IEnumerable<UserGroup>> GetByUser(Guid userId)
+        {
+            return await DbSet
+                .AsNoTracking()
+                .Include(ug => ug.User)
+                .Include(ug => ug.Group)
+                .ThenInclude(ug => ug.UserGroups)
+                .Where(ug => ug.UserId == userId)
+                .ToListAsync();
+        }
+
         public async Task<UserGroup> GetByUserAndGroup(Guid userId, Guid groupId)
         {
             return await DbSet

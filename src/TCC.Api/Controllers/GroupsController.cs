@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using TCC.Application.Dtos;
 using TCC.Application.Services.Groups;
-using TCC.Business.Interfaces;
 
 namespace TCC.Api.Controllers
 {
@@ -14,6 +13,12 @@ namespace TCC.Api.Controllers
         public async Task<IActionResult> Add([FromBody] GroupDto dto)
         {
             return await Execute(() => groupAppService.Add(dto));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            return await Execute(() => groupAppService.GetAll());
         }
 
         [HttpGet("{id:guid}/Link")]

@@ -18,7 +18,7 @@ namespace TCC.Application.Services.Groups
                                  IGroupAdminValidator groupAdminValidator,
                                  IUnityOfWork unityOfWork) : IGroupAppService
     {
-        public async Task<Result<GroupView>> Add(GroupDto dto)
+        public async Task<Result<IdView>> Add(GroupDto dto)
         {
             await unityOfWork.BeginTransactionAsync();
 
@@ -29,7 +29,7 @@ namespace TCC.Application.Services.Groups
             if (notifier.HasNotification())
             {
                 await unityOfWork.RollbackTransactionAsync();
-                return Result.Failure<GroupView>(new Error("400", notifier.GetNotificationMessage()));
+                return Result.Failure<IdView>(new Error("400", notifier.GetNotificationMessage()));
             }
 
             var userGroup = new UserGroup(tokenHelper.GetUserIdFromClaim(), group.Id, true, false);
@@ -39,12 +39,12 @@ namespace TCC.Application.Services.Groups
             if (notifier.HasNotification())
             {
                 await unityOfWork.RollbackTransactionAsync();
-                return Result.Failure<GroupView>(new Error("400", notifier.GetNotificationMessage()));
+                return Result.Failure<IdView>(new Error("400", notifier.GetNotificationMessage()));
             }
 
             await unityOfWork.CommitTransactionAsync();
 
-            return Result.Success(mapper.Map<GroupView>(group));
+            return Result.Success(mapper.Map<IdView>(group));
         }
 
         public async Task<Result<string>> GenerateLink(Guid id)
@@ -94,6 +94,24 @@ namespace TCC.Application.Services.Groups
                 return Result.Failure<IEnumerable<CategoryView>>(new Error("403", "Usuário precisa pertencer ao grupo para poder listar categorias"));
 
             return Result.Success(group.Categories.Select(c => mapper.Map<CategoryView>(c)));
+        }
+
+        public async Task<Result<IEnumerable<GroupView>>> GetAll()
+        {
+            var userId = tokenHelper.GetUserIdFromClaim();
+            var userGroups = await userGroupRepository.GetByUser(userId);
+            var ret = userGroups.Select(ug => new GroupView
+            {
+                Id = ug.GroupId,
+                Name = ug.Group.Name,
+                Description = ug.Group.Description,
+                Members = ug.Group.UserGroups.Count(),
+                Favorite = ug.Favorite,
+                Active = ug.Group.Active,
+                Admin = ug.Admin,
+            });
+
+            return Result.Success(ret);
         }
 
         public void Dispose()
