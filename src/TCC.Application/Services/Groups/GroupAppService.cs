@@ -100,12 +100,18 @@ namespace TCC.Application.Services.Groups
         {
             var userId = tokenHelper.GetUserIdFromClaim();
             var userGroups = await userGroupRepository.GetByUser(userId);
+            var userGroupsByGroup = await userGroupRepository.GetByGroups([.. userGroups.Select(ug => ug.GroupId)]);
+
+            var dicMemberCountByGroupId = userGroupsByGroup
+                .GroupBy(ug => ug.GroupId)
+                .ToDictionary(g => g.Key, g => g.Count());
+
             var ret = userGroups.Select(ug => new GroupView
             {
                 Id = ug.GroupId,
                 Name = ug.Group.Name,
                 Description = ug.Group.Description,
-                Members = ug.Group.UserGroups.Count(),
+                Members = dicMemberCountByGroupId[ug.GroupId],
                 Favorite = ug.Favorite,
                 Active = ug.Group.Active,
                 Admin = ug.Admin,

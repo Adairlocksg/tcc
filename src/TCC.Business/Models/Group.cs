@@ -5,6 +5,7 @@
         public Group() { }
         public Group(string name, string description)
         {
+            Name = name;
             Description = description;
         }
         public string Name { get; private set; }

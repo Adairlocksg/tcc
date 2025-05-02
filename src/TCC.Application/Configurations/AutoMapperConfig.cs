@@ -11,6 +11,7 @@ namespace TCC.Application.Configurations
             CreateMap<User, UserView>().ReverseMap();
             CreateMap<Group, GroupView>().ReverseMap();
             CreateMap<Category, CategoryView>().ReverseMap();
+            CreateMap<Group, IdView>().ReverseMap();
         }
     }
 }

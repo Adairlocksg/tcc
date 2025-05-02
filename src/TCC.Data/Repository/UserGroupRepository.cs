@@ -10,11 +10,18 @@ namespace TCC.Data.Repository
         public async Task<IEnumerable<UserGroup>> GetByUser(Guid userId)
         {
             return await DbSet
-                .AsNoTracking()
                 .Include(ug => ug.User)
                 .Include(ug => ug.Group)
-                .ThenInclude(ug => ug.UserGroups)
                 .Where(ug => ug.UserId == userId)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<UserGroup>> GetByGroups(List<Guid> groupIds)
+        {
+            return await DbSet
+                .Include(ug => ug.User)
+                .Include(ug => ug.Group)
+                .Where(ug => groupIds.Contains(ug.GroupId))
                 .ToListAsync();
         }
 
