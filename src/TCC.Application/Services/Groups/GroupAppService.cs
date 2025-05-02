@@ -47,6 +47,28 @@ namespace TCC.Application.Services.Groups
             return Result.Success(mapper.Map<IdView>(group));
         }
 
+        public async Task<Result<IdView>> Update(Guid id, GroupDto dto)
+        {
+            var group = await groupRepository.GetById(id);
+            if (group is null)
+                return Result.Failure<IdView>(new Error("404", $"Grupo de código {id} não encontrado"));
+
+            var validationGroupAdmin = await groupAdminValidator.Validate(id);
+            if (!validationGroupAdmin.IsSuccess)
+                return Result.Failure<IdView>(new Error(validationGroupAdmin.Error.Code, validationGroupAdmin.Error.Message));
+
+            group.Update(dto.Name, dto.Description);
+
+            await groupService.Update(group);
+
+            if (notifier.HasNotification())
+                return Result.Failure<IdView>(new Error("400", notifier.GetNotificationMessage()));
+
+            await unityOfWork.CommitAsync();
+
+            return Result.Success(mapper.Map<IdView>(group));
+        }
+
         public async Task<Result<string>> GenerateLink(Guid id)
         {
             var group = await groupRepository.GetById(id);

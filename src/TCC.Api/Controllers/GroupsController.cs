@@ -15,6 +15,12 @@ namespace TCC.Api.Controllers
             return await Execute(() => groupAppService.Add(dto));
         }
 
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] GroupDto dto)
+        {
+            return await Execute(() => groupAppService.Update(id, dto));
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
