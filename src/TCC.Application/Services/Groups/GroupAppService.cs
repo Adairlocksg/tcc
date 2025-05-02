@@ -123,6 +123,32 @@ namespace TCC.Application.Services.Groups
             return Result.Success(mapper.Map<CategoryView>(category));
         }
 
+        public async Task<Result<CategoryView>> UpdateCategory(Guid groupId, Guid categoryId, CategoryDto dto)
+        {
+            var group = await groupRepository.GetWithCategories(groupId);
+            if (group is null)
+                return Result.Failure<CategoryView>(new Error("404", $"Grupo de código {groupId} não encontrado"));
+
+            var userGroup = await userGroupRepository.GetByUserAndGroup(tokenHelper.GetUserIdFromClaim(), groupId);
+            if (userGroup is null)
+                return Result.Failure<CategoryView>(new Error("403", "Usuário precisa pertencer ao grupo para poder editar uma categoria"));
+            
+            var category = group.Categories.FirstOrDefault(c => c.Id == categoryId);
+            if (category is null)
+                return Result.Failure<CategoryView>(new Error("404", $"Categoria de código {categoryId} não encontrada"));
+            
+            category.Update(dto.Description);
+            
+            await groupService.UpdateCategory(group, category);
+
+            if (notifier.HasNotification())
+                return Result.Failure<CategoryView>(new Error("400", notifier.GetNotificationMessage()));
+            
+            await unityOfWork.CommitAsync();
+            
+            return Result.Success(mapper.Map<CategoryView>(category));
+        }
+
         public async Task<Result<IEnumerable<CategoryView>>> GetCategories(Guid id)
         {
             var group = await groupRepository.GetWithCategories(id);

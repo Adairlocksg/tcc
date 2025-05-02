@@ -45,6 +45,12 @@ namespace TCC.Api.Controllers
             return await Execute(() => groupAppService.AddCategory(id, dto));
         }
 
+        [HttpPut("{id:guid}/Categories/{categoryId:guid}")]
+        public async Task<IActionResult> UpdateCategory(Guid id, Guid categoryId, [FromBody] CategoryDto dto)
+        {
+            return await Execute(() => groupAppService.UpdateCategory(id, categoryId, dto));
+        }
+
         [HttpGet("{id:guid}/Categories")]
         public async Task<IActionResult> GetCategories(Guid id)
         {

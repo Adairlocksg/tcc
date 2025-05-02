@@ -13,5 +13,6 @@ namespace TCC.Application.Services.Groups
         Task<Result<IEnumerable<GroupView>>> GetAll();
         Task<Result<IdView>> Update(Guid id, GroupDto dto);
         Task<Result<GroupView>> GetById(Guid id);
+        Task<Result<CategoryView>> UpdateCategory(Guid groupId, Guid categoryId, CategoryDto dto);
     }
 }

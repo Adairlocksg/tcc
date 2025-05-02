@@ -36,6 +36,20 @@ namespace TCC.Business.Services
             await categoryRepository.Add(category);
         }
 
+        public async Task UpdateCategory(Group group, Category category)
+        {
+            if (!ExecuteValidation(new CategoryValidation(), category))
+                return;
+            
+            if (group.Categories.Any(c => c.Description == category.Description && c.Id != category.Id))
+            {
+                Notify($"Já existe uma categoria com a mesma descrição no grupo {group.Description}");
+                return;
+            }
+
+            await categoryRepository.Update(category);
+        }
+
         public void Dispose()
         {
             GC.SuppressFinalize(this);
