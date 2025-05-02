@@ -69,6 +69,24 @@ namespace TCC.Application.Services.Groups
             return Result.Success(mapper.Map<IdView>(group));
         }
 
+        public async Task<Result<GroupView>> GetById(Guid id)
+        {
+            var group = await userGroupRepository.GetByUserAndGroup(tokenHelper.GetUserIdFromClaim(), id);
+            if (group is null)
+                return Result.Failure<GroupView>(new Error("404", $"Grupo de código {id} não encontrado para esse usuário"));
+
+            var userGroupsByGroup = await userGroupRepository.GetByGroups([group.Id]);
+            return Result.Success(new GroupView
+            {
+                Id = group.GroupId,
+                Name = group.Group.Name,
+                Description = group.Group.Description,
+                Members = userGroupsByGroup.Count(),
+                Favorite = group.Favorite,
+                Active = group.Group.Active,
+                Admin = group.Admin,
+            });
+        }
         public async Task<Result<string>> GenerateLink(Guid id)
         {
             var group = await groupRepository.GetById(id);

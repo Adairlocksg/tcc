@@ -27,6 +27,12 @@ namespace TCC.Api.Controllers
             return await Execute(() => groupAppService.GetAll());
         }
 
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            return await Execute(() => groupAppService.GetById(id));
+        }
+
         [HttpGet("{id:guid}/Link")]
         public async Task<IActionResult> GenerateLink(Guid id)
         {
