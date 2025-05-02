@@ -11,6 +11,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddEndpointsApiExplorer();
 
 //builder.Configuration.GetConnectionString("DefaultConnection") ??
+
 var cs = Environment.GetEnvironmentVariable("DefaultConnection");
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://*: {port}");
