@@ -35,10 +35,7 @@ namespace TCC.Application.Dtos
         [Required(ErrorMessage = "O campo {0} deve ser preenchido")]
         [Display(Name = "Ativo")]
         public bool Active { get; set; } = true;
-
-        [Required(ErrorMessage = "O campo {0} deve ser preenchido")]
-        [Display(Name = "Usuário")]
-        public Guid UserId { get; set; }
+        public Guid? UserId { get; set; }
 
         [Required(ErrorMessage = "O campo {0} deve ser preenchido")]
         [Display(Name = "Categoria")]

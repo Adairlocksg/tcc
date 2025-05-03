@@ -25,6 +25,8 @@ namespace TCC.Application.Services.Expenses
             if (userGroupFromClaim is null)
                 return Result.Failure<IdView>(new Error("404", $"Usuário de código {tokenHelper.GetUserIdFromClaim()} não encontrado no grupo de código {dto.GroupId}"));
 
+            dto.UserId ??= tokenHelper.GetUserIdFromClaim();
+
             UserGroup userGroup = null;
 
             if (userGroupFromClaim.UserId != dto.UserId)
@@ -32,7 +34,7 @@ namespace TCC.Application.Services.Expenses
                 if (!userGroupFromClaim.Admin)
                     return Result.Failure<IdView>(new Error("403", $"Usuário {userGroupFromClaim.User.UserName} não tem permissão para adicionar despesas para outras pessoas no grupo {userGroupFromClaim.Group.Description}"));
 
-                userGroup = await userGroupRepository.GetByUserAndGroup(dto.UserId, dto.GroupId);
+                userGroup = await userGroupRepository.GetByUserAndGroup((Guid)dto.UserId, dto.GroupId);
                 if (userGroup is null)
                     return Result.Failure<IdView>(new Error("404", $"Usuário de código {dto.UserId} não encontrado no grupo de código {dto.GroupId}"));
             }
@@ -46,7 +48,7 @@ namespace TCC.Application.Services.Expenses
                                       dto.IsRecurring,
                                       userGroupFromClaim.UserId == dto.UserId ? userGroupFromClaim.UserId : userGroup.UserId,
                                       category.Id,
-                                      userGroupFromClaim.UserId == dto.UserId ? userGroupFromClaim.GroupId: userGroup.GroupId);
+                                      userGroupFromClaim.UserId == dto.UserId ? userGroupFromClaim.GroupId : userGroup.GroupId);
 
             await expenseService.Add(expense);
 
