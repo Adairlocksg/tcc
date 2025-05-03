@@ -84,7 +84,8 @@ namespace TCC.Application.Services.Expenses
                     RecurrenceType = expense.Recurrence,
                     IsRecurring = expense.IsRecurring,
                     RecurrencyInterval = expense.RecurrenceInterval,
-                    UserName = expense.User.UserName
+                    UserName = expense.User.UserName,
+                    CategoryName = expense.Category.Description,
                 });
             }
 

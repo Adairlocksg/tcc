@@ -10,5 +10,6 @@ namespace TCC.Application.Views
         public bool IsRecurring { get; set; }
         public int RecurrencyInterval { get; set; }
         public string UserName { get; set; }
+        public string CategoryName { get; set; }
     }
 }
