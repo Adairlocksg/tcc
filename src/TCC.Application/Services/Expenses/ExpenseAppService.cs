@@ -81,7 +81,7 @@ namespace TCC.Application.Services.Expenses
                     Id = expense.Id,
                     Description = expense.Description,
                     TotalValue = totalValue,
-                    RecurrenceType = expense.IsRecurring ? expense.Recurrence?.ToString() : null,
+                    RecurrenceType = expense.Recurrence,
                     IsRecurring = expense.IsRecurring
                 });
             }
