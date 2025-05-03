@@ -16,6 +16,12 @@ namespace TCC.Api.Controllers
             return await Execute(() => inviteAppService.Add(dto));
         }
 
+        [HttpGet("Pending")]
+        public async Task<IActionResult> GetPendingInvitesForAdmin()
+        {
+            return await Execute(() => inviteAppService.GetPendingInvitesForAdmin());
+        }
+
         [HttpPut("{id:guid}/Accept")]
         public async Task<IActionResult> Accept([FromRoute] Guid id)
         {

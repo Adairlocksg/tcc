@@ -10,5 +10,6 @@ namespace TCC.Application.Services.Invites
         Task<Result<IdView>> Add(InviteDto dto);
         Task<Result<IdView>> Accept(Guid id);
         Task<Result<IdView>> Reject(Guid id);
+        Task<Result<IEnumerable<InviteView>>> GetPendingInvitesForAdmin();
     }
 }

@@ -36,6 +36,25 @@ namespace TCC.Application.Services.Invites
             return Result.Success(new IdView(invite.Id));
         }
 
+        public async Task<Result<IEnumerable<InviteView>>> GetPendingInvitesForAdmin()
+        {
+            var userId = tokenHelper.GetUserIdFromClaim();
+            var invites = await inviteRepository.GetPendingInvitesForAdmin(userId);
+            if (invites is null)
+                return Result.Failure<IEnumerable<InviteView>>(new Error("404", "Nenhum convite encontrado"));
+
+            var inviteViews = invites.Select(i => new InviteView
+            {
+                Id = i.Id,
+                GroupDescription = i.Group.Description,
+                UserName = i.User.UserName,
+                GroupName = i.Group.Name,
+                Status = i.Status
+            });
+
+            return Result.Success(inviteViews);
+        }
+
         public async Task<Result<IdView>> Accept(Guid id)
         {
             var invite = await inviteRepository.GetById(id);
