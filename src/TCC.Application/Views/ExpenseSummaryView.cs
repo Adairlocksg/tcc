@@ -8,5 +8,7 @@ namespace TCC.Application.Views
         public decimal TotalValue { get; set; }
         public RecurrenceType? RecurrenceType { get; set; }
         public bool IsRecurring { get; set; }
+        public int RecurrencyInterval { get; set; }
+        public string UserName { get; set; }
     }
 }
