@@ -15,7 +15,7 @@ namespace TCC.Api.Controllers
             return await Execute(() => expenseAppService.Add(dto));
         }
 
-        [HttpGet("SuumaryByGroup")]
+        [HttpGet("SummaryByGroup")]
         public Task<IActionResult> GetExpenseSummaryByGroup([FromQuery] GetExpenseSummaryByGroupDto dto)
         {
             return  Execute(() => expenseAppService.GetExpenseSummaryByGroup(dto));
