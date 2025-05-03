@@ -49,6 +49,8 @@ namespace TCC.Application.Services.Invites
                 GroupDescription = i.Group.Description,
                 UserName = i.User.UserName,
                 GroupName = i.Group.Name,
+                GroupId = i.GroupId,
+                UserId = i.UserId,
                 Status = i.Status
             });
 
