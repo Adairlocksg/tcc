@@ -15,6 +15,18 @@ namespace TCC.Api.Controllers
             return await Execute(() => groupAppService.Add(dto));
         }
 
+        [HttpPut("{id:guid}/Favorite")]
+        public async Task<IActionResult> Favorite(Guid id)
+        {
+            return await Execute(() => groupAppService.Favorite(id));
+        }
+
+        [HttpPut("{id:guid}/Unfavorite")]
+        public async Task<IActionResult> Unfavorite(Guid id)
+        {
+            return await Execute(() => groupAppService.Unfavorite(id));
+        }
+
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] GroupDto dto)
         {
@@ -55,6 +67,12 @@ namespace TCC.Api.Controllers
         public async Task<IActionResult> GetCategories(Guid id)
         {
             return await Execute(() => groupAppService.GetCategories(id));
+        }
+
+        [HttpGet("{id:guid}/Members")]
+        public async Task<IActionResult> GetMembers(Guid id)
+        {
+            return await Execute(() => groupAppService.GetMembers(id));
         }
     }
 }

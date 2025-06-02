@@ -1,4 +1,5 @@
 ﻿using TCC.Application.Services;
+using TCC.Application.Services.Dashboards;
 using TCC.Application.Services.Expenses;
 using TCC.Application.Services.Groups;
 using TCC.Application.Services.Invites;
@@ -40,6 +41,7 @@ namespace TCC.Api.Extensions
             services.AddScoped<IInviteAppService, InviteAppService>();
             services.AddScoped<IExpenseAppService, ExpenseAppService>();
             services.AddScoped<IGroupAdminValidator, GroupAdminValidator>();
+            services.AddScoped<IDashboardAppService, DashboardAppService>();
 
             //Infra
             services.AddScoped<ITokenHelper, TokenHelper>();

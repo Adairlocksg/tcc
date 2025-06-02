@@ -47,6 +47,70 @@ namespace TCC.Application.Services.Groups
             return Result.Success(mapper.Map<IdView>(group));
         }
 
+        public async Task<Result<IdView>> Favorite(Guid id)
+        {
+            var group = await groupRepository.GetById(id);
+            if (group is null)
+                return Result.Failure<IdView>(new Error("404", $"Grupo de código {id} não encontrado"));
+
+            var userGroup = await userGroupRepository.GetByUserAndGroup(tokenHelper.GetUserIdFromClaim(), id);
+            if (userGroup is null)
+                return Result.Failure<IdView>(new Error("403", "Usuário não pertence ao grupo"));
+
+            await userGroupService.Favorite(userGroup);
+
+            if (notifier.HasNotification())
+                return Result.Failure<IdView>(new Error("400", notifier.GetNotificationMessage()));
+
+            await unityOfWork.CommitAsync();
+            return Result.Success(mapper.Map<IdView>(group));
+        }
+
+        public async Task<Result<IdView>> Unfavorite(Guid id)
+        {
+            var group = await groupRepository.GetById(id);
+            if (group is null)
+                return Result.Failure<IdView>(new Error("404", $"Grupo de código {id} não encontrado"));
+           
+            var userGroup = await userGroupRepository.GetByUserAndGroup(tokenHelper.GetUserIdFromClaim(), id);
+            if (userGroup is null)
+                return Result.Failure<IdView>(new Error("403", "Usuário não pertence ao grupo"));
+            
+            await userGroupService.Unfavorite(userGroup);
+            
+            if (notifier.HasNotification())
+                return Result.Failure<IdView>(new Error("400", notifier.GetNotificationMessage()));
+           
+            await unityOfWork.CommitAsync();
+            return Result.Success(mapper.Map<IdView>(group));
+        }
+
+        public async Task<Result<IEnumerable<GroupMemberView>>> GetMembers(Guid id)
+        {
+            var group = await groupRepository.GetById(id);
+            if (group is null)
+                return Result.Failure<IEnumerable<GroupMemberView>>(new Error("404", $"Grupo de código {id} não encontrado"));
+
+            var userGroup = await userGroupRepository.GetByUserAndGroup(tokenHelper.GetUserIdFromClaim(), id);
+            if (userGroup is null)
+                return Result.Failure<IEnumerable<GroupMemberView>>(new Error("403", "Usuário não pertence ao grupo"));
+
+            var userGroups = await userGroupRepository.GetByGroups([id]);
+
+            var members = userGroups.Select(ug => new GroupMemberView
+            {
+                Id = ug.UserId,
+                UserName = ug.User.UserName,
+                FirstName = ug.User.FirstName,
+                LastName = ug.User.LastName,
+                IsCurrentUser = ug.UserId == tokenHelper.GetUserIdFromClaim(),
+                Email = ug.User.Email,
+                Admin = ug.Admin
+            });
+
+            return Result.Success(members);
+        }
+
         public async Task<Result<IdView>> Update(Guid id, GroupDto dto)
         {
             var group = await groupRepository.GetById(id);
@@ -71,20 +135,20 @@ namespace TCC.Application.Services.Groups
 
         public async Task<Result<GroupView>> GetById(Guid id)
         {
-            var group = await userGroupRepository.GetByUserAndGroup(tokenHelper.GetUserIdFromClaim(), id);
-            if (group is null)
+            var userGroup = await userGroupRepository.GetByUserAndGroup(tokenHelper.GetUserIdFromClaim(), id);
+            if (userGroup is null)
                 return Result.Failure<GroupView>(new Error("404", $"Grupo de código {id} não encontrado para esse usuário"));
 
-            var userGroupsByGroup = await userGroupRepository.GetByGroups([group.Id]);
+            var userGroupsByGroup = await userGroupRepository.GetByGroups([userGroup.GroupId]);
             return Result.Success(new GroupView
             {
-                Id = group.GroupId,
-                Name = group.Group.Name,
-                Description = group.Group.Description,
+                Id = userGroup.GroupId,
+                Name = userGroup.Group.Name,
+                Description = userGroup.Group.Description,
                 Members = userGroupsByGroup.Count(),
-                Favorite = group.Favorite,
-                Active = group.Group.Active,
-                Admin = group.Admin,
+                Favorite = userGroup.Favorite,
+                Active = userGroup.Group.Active,
+                Admin = userGroup.Admin,
             });
         }
         public async Task<Result<string>> GenerateLink(Guid id)

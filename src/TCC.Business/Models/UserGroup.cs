@@ -1,4 +1,6 @@
-﻿namespace TCC.Business.Models
+﻿using Microsoft.AspNetCore.Components.Web;
+
+namespace TCC.Business.Models
 {
     public class UserGroup : Entity
     {
@@ -14,6 +16,16 @@
         public bool Favorite { get; set; }
         public Guid UserId { get; set; }
         public Guid GroupId { get; set; }
+
+        public void FavoriteGroup()
+        {
+            Favorite = true;
+        }
+
+        public void UnfavoriteGroup()
+        {
+            Favorite = false;
+        }
 
         //EF Relation
         public User User { get; set; }

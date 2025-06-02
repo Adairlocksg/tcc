@@ -62,15 +62,23 @@ namespace TCC.Application.Services.Expenses
 
         public async Task<Result<List<ExpenseSummaryView>>> GetExpenseSummaryByGroup(GetExpenseSummaryByGroupDto dto)
         {
+            if (dto.EndDate < dto.StartDate)
+                return Result.Failure<List<ExpenseSummaryView>>(new Error("400", "A data final não pode ser anterior à data inicial."));
+
             var group = await userGroupRepository.GetByUserAndGroup(tokenHelper.GetUserIdFromClaim(), dto.GroupId);
             if (group is null)
                 return Result.Failure<List<ExpenseSummaryView>>(new Error("404", $"Grupo de código {dto.GroupId} não encontrado, ou usuário logado não pertence ao grupo"));
 
-            var expenses = await expenseRepository.GetByGroupAndDateRange(dto.GroupId, dto.StartDate, dto.EndDate);
+            var query = expenseRepository.GetByGroupAndDateRange(dto.GroupId, dto.StartDate, dto.EndDate);
+
+            if (dto.CategoryId.HasValue)
+            {
+                query = query.Where(x => x.CategoryId == dto.CategoryId.Value);
+            }
 
             var summaryList = new List<ExpenseSummaryView>();
 
-            foreach (var expense in expenses)
+            foreach (var expense in query.ToList())
             {
                 var occurrences = expenseService.CalculateOcurrencesByDateRange(expense, dto.StartDate, dto.EndDate);
 

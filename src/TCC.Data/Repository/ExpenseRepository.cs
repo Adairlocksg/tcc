@@ -7,13 +7,12 @@ namespace TCC.Data.Repository
 {
     public class ExpenseRepository(MyDbContext db) : Repository<Expense>(db), IExpenseRepository
     {
-        public async Task<IEnumerable<Expense>> GetByGroupAndDateRange(Guid groupId, DateTime startDate, DateTime endDate)
+        public IQueryable<Expense> GetByGroupAndDateRange(Guid groupId, DateTime startDate, DateTime endDate)
         {
-            return await DbSet.AsNoTracking()
+            return DbSet.AsNoTracking()
                  .Include(e => e.User)
                  .Include(e => e.Category)
-                 .Where(e => e.BeginDate <= endDate && (e.EndDate == null || e.EndDate >= startDate) && e.GroupId == groupId)
-                 .ToListAsync();
+                 .Where(e => e.BeginDate <= endDate && (e.EndDate == null || e.EndDate >= startDate) && e.GroupId == groupId);
         }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using TCC.Application.Dtos;
 using TCC.Application.Views;
 using TCC.Business.Base;
 using TCC.Business.Interfaces;
 using TCC.Business.Models;
+using TCC.Data.Repository;
 using TCC.Infra.Helpers;
 using TCC.Infra.Services;
 

@@ -1,6 +1,7 @@
 ﻿using TCC.Application.Dtos;
 using TCC.Application.Views;
 using TCC.Business.Base;
+using TCC.Business.Models;
 
 namespace TCC.Application.Services.Groups
 {
@@ -14,5 +15,8 @@ namespace TCC.Application.Services.Groups
         Task<Result<IdView>> Update(Guid id, GroupDto dto);
         Task<Result<GroupView>> GetById(Guid id);
         Task<Result<CategoryView>> UpdateCategory(Guid groupId, Guid categoryId, CategoryDto dto);
+        Task<Result<IdView>> Favorite(Guid id);
+        Task<Result<IdView>> Unfavorite(Guid id);
+        Task<Result<IEnumerable<GroupMemberView>>> GetMembers(Guid id);
     }
 }

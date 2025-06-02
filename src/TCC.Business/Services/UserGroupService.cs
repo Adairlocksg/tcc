@@ -18,6 +18,18 @@ namespace TCC.Business.Services
             await userGroupRepository.Add(userGroup);
         }
 
+        public async Task Favorite(UserGroup userGroup)
+        {
+            userGroup.FavoriteGroup();
+            await userGroupRepository.Update(userGroup);
+        }
+
+        public async Task Unfavorite(UserGroup userGroup)
+        {
+            userGroup.UnfavoriteGroup();
+            await userGroupRepository.Update(userGroup);
+        }
+
         public void Dispose()
         {
             GC.SuppressFinalize(this);

@@ -4,6 +4,6 @@ namespace TCC.Business.Interfaces
 {
     public interface IExpenseRepository : IRepository<Expense>
     {
-        Task<IEnumerable<Expense>> GetByGroupAndDateRange(Guid groupId, DateTime startDate, DateTime endDate);
+        IQueryable<Expense> GetByGroupAndDateRange(Guid groupId, DateTime startDate, DateTime endDate);
     }
 }
