@@ -16,8 +16,8 @@
         {
             Description = description;
             Value = value;
-            BeginDate = beginDate;
-            EndDate = endDate;
+            BeginDate = beginDate.Date;
+            EndDate = endDate.HasValue ? endDate.Value.Date : null;
             Recurrence = recurrence;
             RecurrenceInterval = recurrenceInterval;
             IsRecurring = isRecurring;
@@ -37,6 +37,27 @@
         public Guid UserId { get; private set; }
         public Guid CategoryId { get; private set; }
         public Guid GroupId { get; private set; }
+
+        public void Update(string description,
+                                decimal value,
+                                DateTime beginDate,
+                                DateTime? endDate,
+                                RecurrenceType? recurrence,
+                                int recurrenceInterval,
+                                bool isRecurring,
+                                Guid userId,
+                                Guid categoryId)
+        {
+            Description = description;
+            Value = value;
+            BeginDate = beginDate.Date;
+            EndDate = endDate.HasValue ? endDate.Value.Date : null;
+            Recurrence = recurrence;
+            RecurrenceInterval = recurrenceInterval;
+            IsRecurring = isRecurring;
+            UserId = userId;
+            CategoryId = categoryId;
+        }
 
         //EF Relation
 

@@ -14,6 +14,14 @@ namespace TCC.Business.Services
             await expenseRepository.Add(expense);
         }
 
+        public async Task Update(Expense expense)
+        {
+            if (!ExecuteValidation(new ExpenseValidation(), expense))
+                return;
+
+            await expenseRepository.Update(expense);
+        }
+
         public async Task Remove(Expense expense)
         {
             await expenseRepository.Remove(expense.Id);
@@ -21,6 +29,9 @@ namespace TCC.Business.Services
 
         public int CalculateOcurrencesByDateRange(Expense expense, DateTime start, DateTime end)
         {
+            start = start.Date;
+            end = end.Date;
+
             if (!expense.IsRecurring)
             {
                 return (expense.BeginDate >= start && expense.BeginDate <= end) ? 1 : 0;
@@ -33,11 +44,11 @@ namespace TCC.Business.Services
             switch (expense.Recurrence)
             {
                 case RecurrenceType.Daily:
-                    occurrences = (int)(effectiveEnd - effectiveStart).TotalDays + 1;
+                    occurrences = (int)(effectiveEnd.Date - effectiveStart.Date).TotalDays + 1;
                     break;
 
                 case RecurrenceType.Weekly:
-                    occurrences = ((int)(effectiveEnd - effectiveStart).TotalDays / 7) + 1;
+                    occurrences = ((int)(effectiveEnd.Date - effectiveStart.Date).TotalDays / 7) + 1;
                     break;
 
                 case RecurrenceType.Monthly:
@@ -47,7 +58,7 @@ namespace TCC.Business.Services
                 case RecurrenceType.Custom:
                     if (expense.RecurrenceInterval > 0)
                     {
-                        occurrences = ((int)(effectiveEnd - effectiveStart).TotalDays / expense.RecurrenceInterval) + 1;
+                        occurrences = ((int)(effectiveEnd.Date - effectiveStart.Date).TotalDays / expense.RecurrenceInterval) + 1;
                     }
                     break;
             }

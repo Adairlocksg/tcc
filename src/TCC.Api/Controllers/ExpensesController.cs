@@ -15,6 +15,24 @@ namespace TCC.Api.Controllers
             return await Execute(() => expenseAppService.Add(dto));
         }
 
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] ExpenseDto dto)
+        {
+            return await Execute(() => expenseAppService.Update(id, dto));
+        }
+
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            return await Execute(() => expenseAppService.Remove(id));
+        }
+
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            return await Execute(() => expenseAppService.GetById(id));
+        }
+
         [HttpGet("SummaryByGroup")]
         public Task<IActionResult> GetExpenseSummaryByGroup([FromQuery] GetExpenseSummaryByGroupDto dto)
         {

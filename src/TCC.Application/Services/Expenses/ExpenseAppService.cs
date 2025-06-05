@@ -60,6 +60,100 @@ namespace TCC.Application.Services.Expenses
             return Result.Success(new IdView(expense.Id));
         }
 
+        public async Task<Result<IdView>> Update(Guid id, ExpenseDto dto)
+        {
+            var expense = await expenseRepository.GetById(id);
+            if (expense is null)
+                return Result.Failure<IdView>(new Error("404", $"Despesa de código {id} não encontrada"));
+
+            var userGroup = await userGroupRepository.GetByUserAndGroup(tokenHelper.GetUserIdFromClaim(), expense.GroupId);
+            if (userGroup is null || (!userGroup.Admin && userGroup.UserId != expense.UserId))
+                return Result.Failure<IdView>(new Error("403", $"Usuário não tem permissão para editar a despesa de código {id}"));
+
+            var category = await categoryRepository.GetById(dto.CategoryId);
+            if (category is null)
+                return Result.Failure<IdView>(new Error("404", $"Categoria de código {dto.CategoryId} não encontrada"));
+
+            dto.UserId ??= tokenHelper.GetUserIdFromClaim();
+
+            UserGroup userGroupToUpdate = null;
+
+            if (userGroup.UserId != dto.UserId)
+            {
+                if (!userGroup.Admin)
+                    return Result.Failure<IdView>(new Error("403", $"Usuário {userGroup.User.UserName} não tem permissão para editar despesas de outras pessoas no grupo {userGroup.Group.Description}"));
+
+                userGroupToUpdate = await userGroupRepository.GetByUserAndGroup((Guid)dto.UserId, expense.GroupId);
+                if (userGroupToUpdate is null)
+                    return Result.Failure<IdView>(new Error("404", $"Usuário de código {dto.UserId} não encontrado no grupo de código {expense.GroupId}"));
+            }
+
+            expense.Update(dto.Description,
+                           dto.Value,
+                           dto.BeginDate,
+                           dto.EndDate,
+                           dto.Recurrence,
+                           dto.RecurrenceInterval,
+                           dto.IsRecurring,
+                           userGroup.UserId == dto.UserId ? userGroup.UserId : userGroupToUpdate.UserId,
+                           category.Id);
+
+            await expenseService.Update(expense);
+
+            if (notifier.HasNotification())
+                return Result.Failure<IdView>(new Error("400", notifier.GetNotificationMessage()));
+
+            await unityOfWork.CommitAsync();
+
+            return Result.Success(new IdView(expense.Id));
+
+        }
+
+        public async Task<Result<ExpenseView>> GetById(Guid id)
+        {
+            var expense = await expenseRepository.GetById(id);
+            if (expense is null)
+                return Result.Failure<ExpenseView>(new Error("404", $"Despesa de código {id} não encontrada"));
+
+            var userGroup = await userGroupRepository.GetByUserAndGroup(tokenHelper.GetUserIdFromClaim(), expense.GroupId);
+            if (userGroup is null)
+                return Result.Failure<ExpenseView>(new Error("403", $"Usuário não tem permissão para visualizar a despesa de código {id}"));
+
+            var view = new ExpenseView
+            {
+                Id = expense.Id,
+                Description = expense.Description,
+                Value = expense.Value,
+                BeginDate = expense.BeginDate,
+                EndDate = expense.EndDate,
+                Recurrence = expense.Recurrence,
+                RecurrenceInterval = expense.RecurrenceInterval,
+                IsRecurring = expense.IsRecurring,
+                CategoryId = expense.Category.Id
+            };
+
+            return Result.Success(view);
+        }
+
+        public async Task<Result<IdView>> Remove(Guid id)
+        {
+            var expense = await expenseRepository.GetById(id);
+            if (expense is null)
+                return Result.Failure<IdView>(new Error("404", $"Despesa de código {id} não encontrada"));
+
+            var userGroup = await userGroupRepository.GetByUserAndGroup(tokenHelper.GetUserIdFromClaim(), expense.GroupId);
+            if (userGroup is null || (!userGroup.Admin && userGroup.UserId != expense.UserId))
+                return Result.Failure<IdView>(new Error("403", $"Usuário não tem permissão para remover a despesa de código {id}"));
+
+            await expenseService.Remove(expense);
+
+            if (notifier.HasNotification())
+                return Result.Failure<IdView>(new Error("400", notifier.GetNotificationMessage()));
+
+            await unityOfWork.CommitAsync();
+            return Result.Success(new IdView(expense.Id));
+        }
+
         public async Task<Result<List<ExpenseSummaryView>>> GetExpenseSummaryByGroup(GetExpenseSummaryByGroupDto dto)
         {
             if (dto.EndDate < dto.StartDate)
@@ -83,6 +177,9 @@ namespace TCC.Application.Services.Expenses
                 var occurrences = expenseService.CalculateOcurrencesByDateRange(expense, dto.StartDate, dto.EndDate);
 
                 var totalValue = occurrences * expense.Value;
+
+                if (totalValue == 0)
+                    continue;
 
                 summaryList.Add(new ExpenseSummaryView
                 {

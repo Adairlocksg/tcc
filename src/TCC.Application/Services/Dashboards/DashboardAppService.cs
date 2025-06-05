@@ -21,17 +21,18 @@ namespace TCC.Application.Services.Dashboards
             var now = DateTime.UtcNow;
 
             var currentMonthStart = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+            var currentMonthEnd = currentMonthStart.AddMonths(1).AddSeconds(-1);
             var nextMonthStart = currentMonthStart.AddMonths(1);
 
             var previousMonthStart = currentMonthStart.AddMonths(-1);
-            var previousMonthEnd = currentMonthStart;
+            var previousMonthEnd = previousMonthStart.AddMonths(1).AddSeconds(-1);
 
             List<GroupDashboardView> groupResults = [];
 
             foreach (var userGroup in userGroups)
             {
-                var currentExpenses = expenseRepository.GetByGroupAndDateRange(userGroup.GroupId, currentMonthStart, nextMonthStart);
-                var currentTotal = await SumExpenses(currentExpenses, currentMonthStart, nextMonthStart);
+                var currentExpenses = expenseRepository.GetByGroupAndDateRange(userGroup.GroupId, currentMonthStart, currentMonthEnd);
+                var currentTotal = await SumExpenses(currentExpenses, currentMonthStart, currentMonthEnd);
 
                 var previousExpenses = expenseRepository.GetByGroupAndDateRange(userGroup.GroupId, previousMonthStart, previousMonthEnd);
                 var previousTotal = await SumExpenses(previousExpenses, previousMonthStart, previousMonthEnd);
